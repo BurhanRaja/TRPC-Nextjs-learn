@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "db:migrate": "npx prisma migrate dev --name note-entity --create-only && npm prisma generate",
+    "db:migrate": "npx prisma migrate dev --name note-entity",
     "db:push": "npx prisma db push"
   },
   "dependencies": {
