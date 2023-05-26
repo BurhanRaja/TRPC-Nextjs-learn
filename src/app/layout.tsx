@@ -2,6 +2,7 @@ import "./globals.css";
 import { Inter } from "next/font/google";
 import { trpc } from "~/utils/trpc";
 import TrpcProvider from "~/components/TrpcProvider";
+import { ToastContainer } from "react-toastify";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -14,6 +15,7 @@ function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang='en'>
       <body className={inter.className}>
+        <ToastContainer />
         <TrpcProvider>{children}</TrpcProvider>
       </body>
     </html>
