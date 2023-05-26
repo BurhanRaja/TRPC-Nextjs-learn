@@ -20,10 +20,9 @@ export const updateNoteSchema = z.object({
     body: z.object({
         title: z.string(),
         content: z.string(),
-        category: z.string(),
-        published: z.boolean()
+        category: z.string().optional(),
+        published: z.boolean().optional()
     })
-    .partial()
 })
 
 export const paginationQuery = z.object({

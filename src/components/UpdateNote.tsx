@@ -1,43 +1,49 @@
 "use client";
 
-import React, { FC } from "react";
+import React, { FC, useEffect } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import { twMerge } from "tailwind-merge";
 import { trpc } from "~/utils/trpc";
 import { useQueryClient } from "@tanstack/react-query";
-import { TypeOf, string } from "zod";
+import { TypeOf } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createNoteSchema } from "~/server/validators/note.schema";
+import z from "zod";
+import {} from "~/server/validators/note.schema";
+import { INote } from "~/type";
 
-type ICreateNoteProps = {
+type IUpdateNoteProps = {
+  note: INote;
   setOpenNoteModal: (open: boolean) => void;
 };
 
-type CreateNoteInput = TypeOf<typeof createNoteSchema>;
+const updateNoteInput = z.object({
+  title: z.string().min(1, "Title is required"),
+  content: z.string().min(1, "Content is required"),
+});
 
-const CreateNote: FC<ICreateNoteProps> = ({ setOpenNoteModal }) => {
+type UpdateNoteInput = TypeOf<typeof updateNoteInput>;
+
+const UpdateNote: FC<IUpdateNoteProps> = ({ note, setOpenNoteModal }) => {
   const queryClient = useQueryClient();
-  const { isLoading, mutate: createNote } = trpc.createNote.useMutation({
-    onSuccess() {
+  const { isLoading, mutate: updateNote } = trpc.updateNote.useMutation({
+    onSuccess: () => {
       queryClient.invalidateQueries([["getNotes"], { limit: 10, page: 1 }]);
       setOpenNoteModal(false);
-      toast("Note Successfully created.", {
-        type: "success",
+      toast.success("Note updated successfully", {
         position: "top-right",
       });
     },
-    onError(error) {
+    onError: () => {
       setOpenNoteModal(false);
-      toast(error.message, {
-        type: "error",
+      toast.error("Failed to update note", {
         position: "top-right",
       });
     },
   });
 
-  const methods = useForm<CreateNoteInput>({
-    resolver: zodResolver(createNoteSchema),
+  const methods = useForm<UpdateNoteInput>({
+    resolver: zodResolver(updateNoteInput),
   });
 
   const {
@@ -46,21 +52,27 @@ const CreateNote: FC<ICreateNoteProps> = ({ setOpenNoteModal }) => {
     formState: { errors },
   } = methods;
 
-  const onSubmitHandler: SubmitHandler<CreateNoteInput> = async (data) => {
-    createNote(data);
+  useEffect(() => {
+    if (note) {
+      methods.reset(note);
+    }
+  }, []);
+
+  const onSubmitHandler: SubmitHandler<UpdateNoteInput> = async (data) => {
+    updateNote({ params: { noteId: note.id }, body: data });
   };
 
   return (
     <section>
-      <div className="flex justify-between items-center mb-3 pb-3 border-b border-gray-200">
-        <h2 className="text-2xl text-ct-dark-600 font-semibold">Create Note</h2>
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-2xl text-ct-dark-600 font-semibold">Update Note</h2>
         <div
           onClick={() => setOpenNoteModal(false)}
           className="text-2xl text-gray-400 hover:bg-gray-200 hover:text-gray-900 rounded-lg p-1.5 ml-auto inline-flex items-center cursor-pointer"
         >
           <i className="bx bx-x"></i>
         </div>
-      </div>
+      </div>{" "}
       <form className="w-full" onSubmit={handleSubmit(onSubmitHandler)}>
         <div className="mb-2">
           <label className="block text-gray-700 text-lg mb-2" htmlFor="title">
@@ -68,10 +80,10 @@ const CreateNote: FC<ICreateNoteProps> = ({ setOpenNoteModal }) => {
           </label>
           <input
             className={twMerge(
-              `appearance-none border border-gray-400 rounded w-full py-3 px-3 text-gray-700 mb-2  leading-tight focus:outline-none`,
+              `appearance-none border border-gray-400 rounded w-full py-3 px-3 text-gray-700 mb-2 leading-tight focus:outline-none`,
               `${errors["title"] && "border-red-500"}`
             )}
-            {...register("title")}
+            {...methods.register("title")}
           />
           <p
             className={twMerge(
@@ -88,8 +100,8 @@ const CreateNote: FC<ICreateNoteProps> = ({ setOpenNoteModal }) => {
           </label>
           <textarea
             className={twMerge(
-              `appearance-none border border-gray-400 rounded w-full py-3 px-3 text-gray-700 mb-2 leading-tight focus:outline-none`,
-              `${errors.content && "border-red-500"}`
+              `appearance-none border rounded w-full py-3 px-3 text-gray-700 mb-2 leading-tight focus:outline-none`,
+              `${errors.content ? "border-red-500" : "border-gray-400"}`
             )}
             rows={6}
             {...register("content")}
@@ -103,10 +115,10 @@ const CreateNote: FC<ICreateNoteProps> = ({ setOpenNoteModal }) => {
             {errors.content && errors.content.message}
           </p>
         </div>
-        <button>Create Note</button>
+        <button>Update Note</button>
       </form>
     </section>
   );
 };
 
-export default CreateNote;
+export default UpdateNote;
