@@ -6,9 +6,12 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "db:migrate": "npx prisma migrate dev --name note-entity --create-only && npm prisma generate",
+    "db:push": "npx prisma db push"
   },
   "dependencies": {
+    "@prisma/client": "^4.14.1",
     "@types/node": "20.2.4",
     "@types/react": "18.2.7",
     "@types/react-dom": "18.2.4",
@@ -21,5 +24,8 @@
     "react-dom": "18.2.0",
     "tailwindcss": "3.3.2",
     "typescript": "5.0.4"
+  },
+  "devDependencies": {
+    "prisma": "^4.14.1"
   }
 }
