@@ -1,6 +1,5 @@
 import "./globals.css";
 import { Inter } from "next/font/google";
-import { trpc } from "~/utils/trpc";
 import TrpcProvider from "~/components/TrpcProvider";
 import { ToastContainer } from "react-toastify";
 
@@ -13,7 +12,13 @@ export const metadata = {
 
 function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang='en'>
+    <html lang="en">
+      <head>
+        <link
+          href="https://unpkg.com/boxicons@2.1.2/css/boxicons.min.css"
+          rel="stylesheet"
+        ></link>
+      </head>
       <body className={inter.className}>
         <ToastContainer />
         <TrpcProvider>{children}</TrpcProvider>

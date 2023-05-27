@@ -97,13 +97,13 @@ const NoteItems: FC<NoteItemProps> = ({ note }) => {
             </ul>
           </div>
         </div>
-      </div>
       <NoteModal
         openNoteModal={openNoteModal}
         setOpenNoteModal={setOpenNoteModal}
       >
         <UpdateNote note={note} setOpenNoteModal={setOpenNoteModal} />
       </NoteModal>
+      </div>
     </>
   );
 };

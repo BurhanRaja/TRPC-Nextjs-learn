@@ -44,10 +44,11 @@ const Home: NextPage = () => {
           </h4>
         </div>
         {/* Note Items */}
-
-        {/* {notes?.map((note) => (
+        <div className="mx-auto mt-6" style={{width: "90%"}}>
+        {notes?.map((note) => (
           <NoteItems key={note.id} note={note} />
-        ))} */}
+          ))}
+          </div>
 
         {/* Create Note Modal */}
         <NoteModal
